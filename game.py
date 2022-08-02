@@ -40,20 +40,60 @@ def end(snakeGame):
 
 def board(snakeGame): #NOT ACTUALLY SET TO DIFFERENT SIZES YET
   snakeGame.erase()
-  box = bounds(snakeGame)
-  while True: 
-    #test drawing something
-    snakeGame.addstr(0, 0, chr(1058))
-    if snakeGame.getch() == ord('0'): #hold screen here for now
-      break
+  box = bounds(snakeGame) #make game boundaries
 
+  # set up starting snake
+  body = chr(9646)
+  snake = [
+    [int((box[1][0]-box[0][0])/2+box[0][0]), int((box[1][1]-box[0][1])/2+box[0][1])],
+    [int((box[1][0]-box[0][0])/2+box[0][0]), int((box[1][1]-box[0][1])/2+box[0][1])-1],
+    [int((box[1][0]-box[0][0])/2+box[0][0]), int((box[1][1]-box[0][1])/2+box[0][1])-2]
+  ]
+  for point in snake:
+    snakeGame.addstr(point[0], point[1], body)
+  direction = curses.KEY_RIGHT
+
+  while True: 
+
+    # SNAKE MOVEMENT
+    key = snakeGame.getch()
+    head = snake[0]
+    new_head = snake[0] #necessary because… ?
+    #direction of movement
+    if key == curses.KEY_UP and direction != curses.KEY_DOWN or key == curses.KEY_RIGHT and direction != curses.KEY_LEFT or key == curses.KEY_DOWN and direction != curses.KEY_UP or key == curses.KEY_LEFT and direction != curses.KEY_RIGHT:
+      direction = key
+    #get it actually going there
+    if direction == curses.KEY_UP:
+      new_head = [head[0]-1, head[1]]
+    elif direction == curses.KEY_RIGHT:
+      new_head = [head[0], head[1]+1]
+    elif direction == curses.KEY_DOWN:
+      new_head = [head[0]+1, head[1]]
+    elif direction == curses.KEY_LEFT:
+      new_head = [head[0], head[1]-1]
+    #get your head in the game!
+    snakeGame.addstr(new_head[0], new_head[1], body)
+    snake.insert(0, new_head)
+    #bye bye tail
+    snakeGame.addstr(snake[-1][0], snake[-1][1], " ")
+    snake.pop() #remove the empty elements at the end?
+
+    # CHECK IF SNAKE DEAD
+    if snake[0][0] == box[0][0] or snake[0][0] == box[1][0] or snake[0][1] == box[0][1] or snake[0][1] == box[1][1]:
+      break
+    
 def bounds(snakeGame):
-  box = [
-    [5, 10],
-    [30, 55]
+  box = [ #y, x
+    [5, 10], #top left
+    [30, 55] #bottom right
   ]
   textpad.rectangle(snakeGame, box[0][0], box[0][1], box[1][0], box[1][1])
   return box
+
+def menu(snakeGame):
+  snakeGame.addstr(0, 0, "hello")
+  snakeGame.getch()
+  
   
 # run the game
 def game(snakeGame): 
@@ -66,6 +106,7 @@ def game(snakeGame):
   while x != ord('q'):
     if x == ord('1') or x == ord('2'):
       board(snakeGame)
+      menu(snakeGame)
     x = snakeGame.getch()
   end(snakeGame)
 
