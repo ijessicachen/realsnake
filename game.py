@@ -5,6 +5,7 @@
 
 import curses
 from curses import textpad
+import random
 
 def intro(snakeGame):
   # cool typing effect / show one at a time
@@ -41,6 +42,9 @@ def end(snakeGame):
 def board(snakeGame): #NOT ACTUALLY SET TO DIFFERENT SIZES YET
   snakeGame.erase()
   box = bounds(snakeGame) #make game boundaries
+  f = False #signal no fruits on the board
+  fy, fx = 0, 0 #fruit coordinates
+  points = 0 #set points to 0
 
   # set up starting snake
   body = chr(9646)
@@ -55,6 +59,9 @@ def board(snakeGame): #NOT ACTUALLY SET TO DIFFERENT SIZES YET
 
   while True: 
 
+    # REFRESH POINTS
+    snakeGame.addstr(box[0][0]-1, box[0][1], chr(10023) + " = " + str(points))
+    
     # SNAKE MOVEMENT
     key = snakeGame.getch()
     head = snake[0]
@@ -78,22 +85,41 @@ def board(snakeGame): #NOT ACTUALLY SET TO DIFFERENT SIZES YET
     snakeGame.addstr(snake[-1][0], snake[-1][1], " ")
     snake.pop() #remove the empty elements at the end?
 
+    # IF SNAKE GETS FRUIT
+    if snake[len(snake)-1][0] == fy and snake[len(snake)-1][1] == fx:
+      points += 1
+      f = False #STILL NEED TO ADD THE SNAKE GETTING LONGER
+    # FRUIT GENERATION
+    if f == False:
+      fy, fx = fruits(box, snake)
+      snakeGame.addstr(fy, fx, chr(10023))
+      f = True
+    
     # CHECK IF SNAKE DEAD
     if snake[0][0] == box[0][0] or snake[0][0] == box[1][0] or snake[0][1] == box[0][1] or snake[0][1] == box[1][1]:
-      break
+      return box
     
 def bounds(snakeGame):
   box = [ #y, x
     [5, 10], #top left
-    [30, 55] #bottom right
+    [20, 55] #bottom right
   ]
   textpad.rectangle(snakeGame, box[0][0], box[0][1], box[1][0], box[1][1])
   return box
 
-def menu(snakeGame):
-  snakeGame.addstr(0, 0, "hello")
-  snakeGame.getch()
+def fruits(box, snake):
+  n = True
+  while n:
+    for sc in snake:
+      y = random.randrange(box[0][0]+1, box[1][0])
+      x = random.randrange(box[0][1]+1, box[1][1])
+      if y != sc[0] and x != sc[1]:
+        n = False
+  return y, x
   
+
+def menu(snakeGame, box):
+  snakeGame.addstr("You died!")
   
 # run the game
 def game(snakeGame): 
@@ -105,8 +131,7 @@ def game(snakeGame):
   x = snakeGame.getch()
   while x != ord('q'):
     if x == ord('1') or x == ord('2'):
-      board(snakeGame)
-      menu(snakeGame)
+      menu(snakeGame, board(snakeGame))
     x = snakeGame.getch()
   end(snakeGame)
 
