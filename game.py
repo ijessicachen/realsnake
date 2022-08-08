@@ -64,32 +64,23 @@ def board(snakeGame): #NOT ACTUALLY SET TO DIFFERENT SIZES YET
     
     # SNAKE MOVEMENT
     key = snakeGame.getch()
-    head = snake[0]
-    new_head = snake[0] #necessary because… ?
     #direction of movement
     if key == curses.KEY_UP and direction != curses.KEY_DOWN or key == curses.KEY_RIGHT and direction != curses.KEY_LEFT or key == curses.KEY_DOWN and direction != curses.KEY_UP or key == curses.KEY_LEFT and direction != curses.KEY_RIGHT:
       direction = key
-    #get it actually going there
-    if direction == curses.KEY_UP:
-      new_head = [head[0]-1, head[1]]
-    elif direction == curses.KEY_RIGHT:
-      new_head = [head[0], head[1]+1]
-    elif direction == curses.KEY_DOWN:
-      new_head = [head[0]+1, head[1]]
-    elif direction == curses.KEY_LEFT:
-      new_head = [head[0], head[1]-1]
-    #get your head in the game!
-    snakeGame.addstr(new_head[0], new_head[1], body)
-    snake.insert(0, new_head)
+    #add head in direction you go
+    sadd(snakeGame, snake, direction, body, 0, 1)
     #bye bye tail
     snakeGame.addstr(snake[-1][0], snake[-1][1], " ")
     snake.pop() #remove the empty elements at the end?
+    #THERE'S THIS WEIRD FLICKER THING SOMETHIMES WHEN I MOVE, THIS
+    #IS TO HELP FIGURE OUT WHAT THAT IS
+    snakeGame.addstr(30, 0, "pop?" + str(snake[0]))
 
     # IF SNAKE GETS FRUIT
     if snake[len(snake)-1][0] == fy and snake[len(snake)-1][1] == fx:
       points += 1
-      f = False #STILL NEED TO ADD THE SNAKE GETTING LONGER
-    # FRUIT GENERATION
+      f = False
+      sadd(snakeGame, snake, direction, body, len(snake)-1, -1) 
     if f == False:
       fy, fx = fruits(box, snake)
       snakeGame.addstr(fy, fx, chr(10023))
@@ -106,6 +97,29 @@ def bounds(snakeGame):
   ]
   textpad.rectangle(snakeGame, box[0][0], box[0][1], box[1][0], box[1][1])
   return box
+
+# adding parts of the snake, used for movement and fruit
+def sadd(snakeGame, snake, direction, body, pos, fac):
+  og = snake[pos]
+  new = snake[pos] #? all I know is it works weirdly without
+  
+  #move according to key pressed
+  if direction == curses.KEY_UP:
+    new = [og[0]-fac, og[1]]
+  elif direction == curses.KEY_RIGHT:
+    new = [og[0], og[1]+fac]
+  elif direction == curses.KEY_DOWN:
+    new = [og[0]+fac, og[1]]
+  elif direction == curses.KEY_LEFT:
+    new = [og[0], og[1]-fac]
+
+  #get your head in the game!
+  snakeGame.addstr(new[0], new[1], body)
+  if pos == 0:
+    snake.insert(pos, new)
+  else:
+    snake.append(new)
+  
 
 def fruits(box, snake):
   n = True
