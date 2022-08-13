@@ -7,6 +7,27 @@ import curses
 from curses import textpad
 import random
 
+# literally just taken from my Minesweeper but
+def colours():
+    #curses setup for colours
+    curses.start_color()
+    curses.use_default_colors()
+
+    for i in range(0, curses.COLORS):
+      #initialize color pair
+      if i == 15:
+        curses.init_pair(i + 1, i, 1)
+      elif i == 16:
+        curses.init_pair(i + 1, i, 196)
+      else:
+        curses.init_pair(i + 1, i, -1)
+    #return colors in a dictionary type
+    return{
+      "fruit": curses.color_pair(227),
+      "border": curses.color_pair(18),
+      "snake": curses.color_pair(21)
+    }
+
 def intro(snakeGame):
   # cool typing effect / show one at a time
   x = "Hello! Welcome to SNAKE"
@@ -24,7 +45,7 @@ def intro(snakeGame):
 
   # actual options
   x = [
-    "1 standard (240, 160, idk)",
+    "1 standard (240, 160, standard speed)",
     "2 adaptable (maxX, maxY, standard speed)"
   ]
   for r in range(len(x)):
@@ -39,9 +60,12 @@ def end(snakeGame):
     snakeGame.addstr(0, r, x[r])
     snakeGame.getch()
 
-def board(snakeGame): #NOT ACTUALLY SET TO DIFFERENT SIZES YET
+# game,
+#DIFFERENT DIFFICULTIES DON'T EXIST YET
+def board(snakeGame, mode): 
   snakeGame.erase()
-  box = bounds(snakeGame) #make game boundaries
+  col = colours()
+  box = bounds(snakeGame, mode) #make game boundaries
   f = False #signal no fruits on the board
   fy, fx = 0, 0 #fruit coordinates
   points = 0 #set points to 0
@@ -55,6 +79,7 @@ def board(snakeGame): #NOT ACTUALLY SET TO DIFFERENT SIZES YET
   ]
   for point in snake:
     snakeGame.addstr(point[0], point[1], body)
+    point_colour = col["border"]
   direction = curses.KEY_RIGHT
 
   while True: 
@@ -101,12 +126,17 @@ def board(snakeGame): #NOT ACTUALLY SET TO DIFFERENT SIZES YET
     # CHECK IF SNAKE DEAD
     if snake[0][0] == box[0][0] or snake[0][0] == box[1][0] or snake[0][1] == box[0][1] or snake[0][1] == box[1][1]:
       return box
+
+    #ADD A WAY TO WIN GAME
     
-def bounds(snakeGame):
+def bounds(snakeGame, mode):
   box = [ #y, x
     [5, 10], #top left
     [20, 55] #bottom right
   ]
+  if mode == '2':
+      box[0][1] = curses.LINES - 5
+      box[1][1] = curses.COLS - 20
   textpad.rectangle(snakeGame, box[0][0], box[0][1], box[1][0], box[1][1])
   return box
 
@@ -125,6 +155,11 @@ def fruits(box, snake):
   
 
 def menu(snakeGame, box):
+  frame = [
+    [int((box[1][0]-box[0][0])/2+box[0][0])-4, int((box[1][1]-box[0][1])/2+box[0][1])-15],
+    [int((box[1][0]-box[0][0])/2+box[0][0])+6, int((box[1][1]-box[0][1])/2+box[0][1])+15],
+  ]
+  textpad.rectangle(snakeGame, frame[0][0], frame[0][1], frame[1][0], frame[1][1])
   snakeGame.addstr("You died!")
   
 # run the game
@@ -137,7 +172,7 @@ def game(snakeGame):
   x = snakeGame.getch()
   while x != ord('q'):
     if x == ord('1') or x == ord('2'):
-      menu(snakeGame, board(snakeGame))
+      menu(snakeGame, board(snakeGame, chr(x)))
     x = snakeGame.getch()
   end(snakeGame)
 
