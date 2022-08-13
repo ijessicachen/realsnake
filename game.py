@@ -36,8 +36,17 @@ def intro(snakeGame):
     snakeGame.getch()
   x = [
     "Please select your game mode",
-    "'select this' 'name of type' (x, y, speed)"
-   #"size of a block (show a char that fills block)"
+    "'select this' 'name of type' (x, y, speed)",
+    "",
+    "",
+    "",
+    "",
+    "your screen size is currently (maxX, maxY)",
+    "(" + str(curses.COLS) + ", " + str(curses.LINES) +")",
+    "it is reccommended the size stay at least (x, y)",
+    "(65, 26)" 
+    #AND THEN MAKE IT SO YOU WILL GET KICKED IN THE BEGINNING IF YOUR
+    #SCREEN IS NOT AT LEAST THAT SIZE
   ]
   for r in range(len(x)):
     snakeGame.addstr(2+r, 1, x[r])
@@ -45,8 +54,8 @@ def intro(snakeGame):
 
   # actual options
   x = [
-    "1 standard (240, 160, standard speed)",
-    "2 adaptable (maxX, maxY, standard speed)"
+    "1 standard (45, 15, standard speed)",
+    "2 adaptable (maxX-20, maxY-10, standard speed)",
   ]
   for r in range(len(x)):
     snakeGame.addstr(5+r, 3, x[r])
@@ -135,8 +144,8 @@ def bounds(snakeGame, mode):
     [20, 55] #bottom right
   ]
   if mode == '2':
-      box[0][1] = curses.LINES - 5
-      box[1][1] = curses.COLS - 20
+      box[1][0] = (curses.LINES-5)
+      box[1][1] = curses.COLS-10
   textpad.rectangle(snakeGame, box[0][0], box[0][1], box[1][0], box[1][1])
   return box
 
