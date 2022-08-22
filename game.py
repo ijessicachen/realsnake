@@ -4,9 +4,24 @@
 #    complete the game
 
 import curses
-from curses import textpad
 import random
 
+# change curses.textpad.rectangle so I can add colour
+def rectangle(win, uly, ulx, lry, lrx, col):
+  #manually creating vline and hline since I can't add colour for
+  #those functions either
+  for x in range(uly+1, lry): #vline
+    win.addch(x, ulx, curses.ACS_VLINE, col)
+    win.addch(x, lrx, curses.ACS_VLINE, col)
+  for x in range(ulx+1, lrx): #hline 
+    win.addch(uly, x, curses.ACS_HLINE, col)
+    win.addch(lry, x, curses.ACS_HLINE, col)              
+  #corners
+  win.addch(uly, ulx, curses.ACS_ULCORNER, col)                         
+  win.addch(uly, lrx, curses.ACS_URCORNER, col)                         
+  win.addch(lry, lrx, curses.ACS_LRCORNER, col)                 
+  win.addch(lry, ulx, curses.ACS_LLCORNER, col)
+  
 # literally just taken from my Minesweeper but
 def colours():
     #curses setup for colours
@@ -24,11 +39,27 @@ def colours():
     #return colors in a dictionary type
     return{
       "fruit": curses.color_pair(227),
-      "border": curses.color_pair(18),
-      "snake": curses.color_pair(21)
+      "border": curses.color_pair(6),
+      "snake": curses.color_pair(34),
+      "dead": curses.color_pair(2)
     }
 
 def intro(snakeGame):
+  # check if the screen size is big enough
+  if (curses.COLS < 65 or curses.LINES < 26):
+    x = [
+      "hey",
+      "your screen size is currently (x, y) (" + str(curses.COLS) + ", " + str(curses.LINES) +")",
+      "it should be at least (x, y) (65, 26)",
+      "Sorry for the inconvenience, ",
+      "but please adjust the screen size."
+    ]
+    for r in x:
+      for s in range(len(r)):
+        snakeGame.addstr(x.index(r), s, x[x.index(r)][s])
+        snakeGame.getch()
+    curses.endwin()
+    #FIND WAY TO KICK FROM THIS POINT
   # cool typing effect / show one at a time
   x = "Hello! Welcome to SNAKE"
   for r in range(1, len(x)+1):
@@ -73,7 +104,7 @@ def end(snakeGame):
 #DIFFERENT DIFFICULTIES DON'T EXIST YET
 def board(snakeGame, mode): 
   snakeGame.erase()
-  col = colours()
+  col = colours() #set up colours?
   box = bounds(snakeGame, mode) #make game boundaries
   f = False #signal no fruits on the board
   fy, fx = 0, 0 #fruit coordinates
@@ -87,14 +118,14 @@ def board(snakeGame, mode):
     [int((box[1][0]-box[0][0])/2+box[0][0]), int((box[1][1]-box[0][1])/2+box[0][1])-2]
   ]
   for point in snake:
-    snakeGame.addstr(point[0], point[1], body)
-    point_colour = col["border"]
+    snakeGame.addstr(point[0], point[1], body, col["snake"])
   direction = curses.KEY_RIGHT
 
   while True: 
 
     # REFRESH POINTS
-    snakeGame.addstr(box[0][0]-1, box[0][1], chr(10023) + " = " + str(points))
+    snakeGame.addstr(box[0][0]-1, box[0][1], chr(10023) + " = " + str(points), col["snake"])
+    snakeGame.addstr(box[0][0]-1, box[0][1], chr(10023), col["fruit"])
     
     # SNAKE MOVEMENT
     key = snakeGame.getch()
@@ -114,7 +145,7 @@ def board(snakeGame, mode):
     elif direction == curses.KEY_LEFT:
       new = [og[0], og[1]-1]
     #get your head in the game!
-    snakeGame.addstr(new[0], new[1], body)
+    snakeGame.addstr(new[0], new[1], body, col["snake"])
     snake.insert(0, new)
 
     # IF SNAKE GETS FRUIT
@@ -129,7 +160,7 @@ def board(snakeGame, mode):
     #no fruit on the board? add one
     if f == False:
       fy, fx = fruits(box, snake)
-      snakeGame.addstr(fy, fx, chr(10023))
+      snakeGame.addstr(fy, fx, chr(10023), col["fruit"])
       f = True
     
     # CHECK IF SNAKE DEAD
@@ -139,6 +170,7 @@ def board(snakeGame, mode):
     #ADD A WAY TO WIN GAME
     
 def bounds(snakeGame, mode):
+  col = colours()
   box = [ #y, x
     [5, 10], #top left
     [20, 55] #bottom right
@@ -146,7 +178,7 @@ def bounds(snakeGame, mode):
   if mode == '2':
       box[1][0] = (curses.LINES-5)
       box[1][1] = curses.COLS-10
-  textpad.rectangle(snakeGame, box[0][0], box[0][1], box[1][0], box[1][1])
+  rectangle(snakeGame, box[0][0], box[0][1], box[1][0], box[1][1], col["border"])
   return box
 
 def fruits(box, snake):
@@ -164,11 +196,12 @@ def fruits(box, snake):
   
 
 def menu(snakeGame, box):
+  col = colours()
   frame = [
     [int((box[1][0]-box[0][0])/2+box[0][0])-4, int((box[1][1]-box[0][1])/2+box[0][1])-15],
     [int((box[1][0]-box[0][0])/2+box[0][0])+6, int((box[1][1]-box[0][1])/2+box[0][1])+15],
   ]
-  textpad.rectangle(snakeGame, frame[0][0], frame[0][1], frame[1][0], frame[1][1])
+  rectangle(snakeGame, frame[0][0], frame[0][1], frame[1][0], frame[1][1], col["dead"])
   snakeGame.addstr("You died!")
   
 # run the game
