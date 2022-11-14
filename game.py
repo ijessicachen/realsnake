@@ -3,6 +3,14 @@
 # ---purpose is to make the structure more intuitive and to actually 
 #    complete the game
 
+'''
+TO DO
+- make it so when you die you press r to replay or m to 
+  go back to the menu
+- screen size warning
+- make an easy difficulty (easier to test that way)
+'''
+
 import curses
 import random
 
