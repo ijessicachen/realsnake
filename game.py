@@ -5,6 +5,8 @@
 
 '''
 TO DO
+- find a way to change speeds (this will help for 
+  minesweeper too
 - make it so when you die you press r to replay or m to 
   go back to the menu
 - screen size warning
@@ -80,10 +82,13 @@ def intro(snakeGame):
     "",
     "",
     "",
+    "",
     "your screen size is currently (maxX, maxY)",
     "(" + str(curses.COLS) + ", " + str(curses.LINES) +")",
-    "it is reccommended the size stay at least (x, y)",
-    "(65, 26)" 
+    "the size must stay at least (x, y)",
+    "(65, 26)", 
+    "",
+    "press 'q' or 'esc' while not in-game to quit"
     #AND THEN MAKE IT SO YOU WILL GET KICKED IN THE BEGINNING IF YOUR
     #SCREEN IS NOT AT LEAST THAT SIZE
   ]
@@ -94,7 +99,8 @@ def intro(snakeGame):
   # actual options
   x = [
     "1 standard (45, 15, standard speed)",
-    "2 adaptable (maxX-20, maxY-10, standard speed)",
+    "2 easy (30, 10, slow speed)",
+    "3 adaptable (maxX-20, maxY-10, standard speed)",
   ]
   for r in range(len(x)):
     snakeGame.addstr(5+r, 3, x[r])
@@ -109,7 +115,6 @@ def end(snakeGame):
     snakeGame.getch()
 
 # game,
-#DIFFERENT DIFFICULTIES DON'T EXIST YET
 def board(snakeGame, mode): 
   snakeGame.erase()
   col = colours() #set up colours?
@@ -184,7 +189,10 @@ def bounds(snakeGame, mode):
     [20, 55] #bottom right
   ]
   if mode == '2':
-      box[1][0] = (curses.LINES-5)
+      box[1][0] = 15
+      box[1][1] = 40
+  elif mode == '3':
+      box[1][0] = curses.LINES-5
       box[1][1] = curses.COLS-10
   rectangle(snakeGame, box[0][0], box[0][1], box[1][0], box[1][1], col["border"])
   return box
@@ -203,6 +211,7 @@ def fruits(box, snake):
   return y, x
   
 
+''' add actual info here '''
 def menu(snakeGame, box):
   col = colours()
   frame = [
@@ -220,8 +229,8 @@ def game(snakeGame):
 
   intro(snakeGame)
   x = snakeGame.getch()
-  while x != ord('q'):
-    if x == ord('1') or x == ord('2'):
+  while x != ord('q') and x != 27:
+    if x == ord('1') or x == ord('2') or x == ord('3'):
       menu(snakeGame, board(snakeGame, chr(x)))
     x = snakeGame.getch()
   end(snakeGame)
