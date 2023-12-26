@@ -71,6 +71,7 @@ def intro(snakeGame):
     curses.endwin()
     #FIND WAY TO KICK FROM THIS POINT
   # cool typing effect / show one at a time
+  snakeGame.clear()
   x = "Hello! Welcome to SNAKE"
   for r in range(1, len(x)+1):
     snakeGame.addstr(1, r, x[r-1])
