@@ -64,48 +64,49 @@ def intro(snakeGame):
       "Sorry for the inconvenience, ",
       "but please adjust the screen size."
     ]
-    for r in x:
+    for r in x: # what does this do?
       for s in range(len(r)):
         snakeGame.addstr(x.index(r), s, x[x.index(r)][s])
         snakeGame.getch()
     curses.endwin()
     #FIND WAY TO KICK FROM THIS POINT
-  # cool typing effect / show one at a time
-  snakeGame.clear()
-  x = "Hello! Welcome to SNAKE"
-  for r in range(1, len(x)+1):
-    snakeGame.addstr(1, r, x[r-1])
-    snakeGame.getch()
-  x = [
-    "Please select your game mode",
-    "'select this' 'name of type' (x, y, speed)",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "your screen size is currently (maxX, maxY)",
-    "(" + str(curses.COLS) + ", " + str(curses.LINES) +")",
-    "the size must stay at least (x, y)",
-    "(65, 26)", 
-    "",
-    "press 'q' or 'esc' while not in-game to quit"
-    #AND THEN MAKE IT SO YOU WILL GET KICKED IN THE BEGINNING IF YOUR
-    #SCREEN IS NOT AT LEAST THAT SIZE
-  ]
-  for r in range(len(x)):
-    snakeGame.addstr(2+r, 1, x[r])
-    snakeGame.getch()
+  else:
+    # cool typing effect / show one at a time
+    snakeGame.clear()
+    x = "Hello! Welcome to SNAKE"
+    for r in range(1, len(x)+1):
+      snakeGame.addstr(1, r, x[r-1])
+      snakeGame.getch()
+    x = [
+      "Please select your game mode",
+      "'select this' 'name of type' (x, y, speed)",
+      "",
+      "",
+      "",
+      "",
+      "",
+      "your screen size is currently (maxX, maxY)",
+      "(" + str(curses.COLS) + ", " + str(curses.LINES) +")",
+      "the size must stay at least (x, y)",
+      "(65, 26)", 
+      "",
+      "press 'q' or 'esc' while not in-game to quit"
+      #AND THEN MAKE IT SO YOU WILL GET KICKED IN THE BEGINNING IF YOUR
+      #SCREEN IS NOT AT LEAST THAT SIZE
+    ]
+    for r in range(len(x)):
+      snakeGame.addstr(2+r, 1, x[r])
+      snakeGame.getch()
 
-  # actual options
-  x = [
-    "1 standard (45, 15, standard speed)",
-    "2 easy (30, 10, slow speed)",
-    "3 adaptable (maxX-20, maxY-10, standard speed)",
-  ]
-  for r in range(len(x)):
-    snakeGame.addstr(5+r, 3, x[r])
-    snakeGame.getch()
+    # actual options
+    x = [
+      "1 standard (45, 15, standard speed)",
+      "2 easy (30, 10, slow speed)",
+      "3 adaptable (maxX-20, maxY-10, standard speed)",
+    ]
+    for r in range(len(x)):
+      snakeGame.addstr(5+r, 3, x[r])
+      snakeGame.getch()
 
 #end message
 def end(snakeGame):
