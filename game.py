@@ -7,6 +7,10 @@
 TO DO
 - find a way to change speeds (this will help for 
   minesweeper too
+    - something to to with timeout?
+    - https://stackoverflow.com/questions/48360550/python-curses-while-loop-and-timeout
+    this information seems useful
+- make so fruit doesn't spawn on snake
 - make it so when you die you press r to replay or m to 
   go back to the menu
 - screen size warning
@@ -101,7 +105,7 @@ def intro(snakeGame):
     # actual options
     x = [
       "1 standard (45, 15, standard speed)",
-      "2 easy (30, 10, slow speed)",
+      "2 easy (10, 5, slow speed)",
       "3 adaptable (maxX-20, maxY-10, standard speed)",
     ]
     for r in range(len(x)):
@@ -173,6 +177,7 @@ def board(snakeGame, mode):
       snakeGame.addstr(snake[-1][0], snake[-1][1], " ")
       snake.pop() #remove the empty elements at the end?
     #no fruit on the board? add one
+    #  - find a way to make it so it doesn't spawn on      #    the snake
     if f == False:
       fy, fx = fruits(box, snake)
       snakeGame.addstr(fy, fx, chr(10023), col["fruit"])
@@ -191,8 +196,8 @@ def bounds(snakeGame, mode):
     [20, 55] #bottom right
   ]
   if mode == '2':
-      box[1][0] = 15
-      box[1][1] = 40
+      box[1][0] = 10
+      box[1][1] = 20
   elif mode == '3':
       box[1][0] = curses.LINES-5
       box[1][1] = curses.COLS-10
@@ -227,7 +232,10 @@ def menu(snakeGame, box):
 def game(snakeGame): 
   curses.curs_set(0) #hide the cursor
   snakeGame.nodelay(1) #animate?
-  snakeGame.timeout(100) #timeout is at 0.1 seconds
+  # timeout is what controls how fast it loops?
+  #timeout is at 0.1 seconds when value is 100
+  #  - too slow? Frames are definitely too obvious
+  snakeGame.timeout(800) 
 
   intro(snakeGame)
   x = snakeGame.getch()
